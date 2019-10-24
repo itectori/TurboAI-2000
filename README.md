@@ -19,7 +19,30 @@ source setup.sh
 
 ## Usage
 
-`comming soon`
+The entry point of the program is the `turboAI.py` file at the root of the repository.
+
+```
+Usage: python3 turboAI.py <command> [args...]
+```
+
+Here is the list of the available commands and their arguments:
+
+| Command | arguments | description
+|--|--|--|
+| learn | *game config ai* | Train the ai to play the given game. |
+| play_humans | *game* | Start a game between 2 humans. |
+| play_human_vs_ai | *game human_side ai* | Start a game against the given ai. **human_side** is either 1 or 2. |
+| play_ais | *game ai_1 ai_2* | Start a game between 2 ais. |
+
+For example, if you want to challenge your ai "Bobby" at connect 4, you have to do something like:
+
+```bash
+# Train Bobby to play Connect 4
+python3 learn connect4 connect4/default.config Bobby
+
+# Play against Bobby as player 2
+python3 play_human_vs_ai connect4 2 Boby
+```
 
 ## Implement your own game
 

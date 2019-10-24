@@ -14,7 +14,7 @@ Fell free to implement your own game!
 Run the following script to install all dependencies and start the environment.
 
 ```bash
-./setup.sh
+source setup.sh
 ```
 
 ## Usage

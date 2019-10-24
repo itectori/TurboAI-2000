@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 
 def init():
     return np.array([1, np.array([0] * 9)])
@@ -44,15 +45,18 @@ def interactive_mode():
         print_state(state)
         move = -1
         while move == -1:
-            choice = -1
+            choice = -2
             try:
-                choice = int(input(f"Select a move to play {get_all_moves(state)}:"))
-                if choice in get_all_moves(state):
-                    move = choice
-                else:
-                    print("Your choice is not a valid move")
+                choice = int(input(f"Select a move to play {get_all_moves(state)} (-1 to quit):"))
             except:
                 print("Please provide a valid number")
+                continue
+            if choice == -1:
+                sys.exit(0)
+            if choice in get_all_moves(state):
+                move = choice
+            else:
+                print("Your choice is not a valid move")
         play(state, move)
     print_state(state)
     print(("", "Player 1 wins!", "Player 2 wins!", "Draw")[end(state)])

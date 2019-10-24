@@ -44,7 +44,7 @@ commands = [Command("learn", ["<game>", "<config>", "<ai>"],
 
 
 def help():
-    print("Usage:", sys.argv[0], "<command> [args...]")
+    print("Usage: python3", sys.argv[0], "<command> [args...]")
     print("Here is the list of the available commands and their arguments:")
     for c in commands:
         print(f" * {c.name}".ljust(21), f"{' '.join(c.args)}".ljust(30), "|", c.desc)

@@ -3,11 +3,11 @@ import connect4.game as connect4
 import tictactoe.game as tictactoe
 
 class Command:
-    def __init__(self, name, args, desc, func):
-        self.name = name
-        self.args = args
-        self.desc = desc
-        self.func = func
+    def __init__(game, name, args, desc, func):
+        game.name = name
+        game.args = args
+        game.desc = desc
+        game.func = func
 
 def get_game(game):
     games = {
@@ -19,12 +19,38 @@ def get_game(game):
         sys.exit(1)
     return games[game]
 
+def interactive_mode(game, p1, p2):
+    state = game.init()
+    turn = 0
+    while not game.end(state):
+        game.print_state(state)
+        move = -1
+        if (p1, p2)[turn % 2]:
+            move = game.get_all_moves(state) #TODO call ai function
+        while move == -1:
+            choice = -2
+            try:
+                choice = int(input(f"Select a move to play {game.get_all_moves(state)} (-1 to quit):"))
+            except:
+                print("Please provide a valid number")
+                continue
+            if choice == -1:
+                sys.exit(0)
+            if choice in game.get_all_moves(state):
+                move = choice
+            else:
+                print("Your choice is not a valid move")
+        game.play(state, move)
+        turn += 1
+    game.print_state(state)
+    print(("", "Player 1 wins!", "Player 2 wins!", "Draw")[game.end(state)])
+
 def learn(game, config, ai):
     game = get_game(game)
 
 def play_humans(game):
     game = get_game(game)
-    game.interactive_mode(None, None)
+    interactive_mode(game, None, None)
 
 def play_human_vs_ai(game, human_side, ai):
     game = get_game(game)

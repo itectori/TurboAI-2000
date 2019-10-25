@@ -40,31 +40,3 @@ class Game:
             return 3
         return 0
 
-    def interactive_mode(self, p1, p2):
-        state = self.init()
-        turn = 0
-        while not self.end(state):
-            self.print_state(state)
-            move = -1
-            if (p1, p2)[turn % 2]:
-                move = self.get_all_moves(state) #TODO call ai function
-            while move == -1:
-                choice = -2
-                try:
-                    choice = int(input(f"Select a move to play {self.get_all_moves(state)} (-1 to quit):"))
-                except:
-                    print("Please provide a valid number")
-                    continue
-                if choice == -1:
-                    sys.exit(0)
-                if choice in self.get_all_moves(state):
-                    move = choice
-                else:
-                    print("Your choice is not a valid move")
-            self.play(state, move)
-            turn += 1
-        self.print_state(state)
-        print(("", "Player 1 wins!", "Player 2 wins!", "Draw")[self.end(state)])
-
-if __name__ == "__main__":
-    Game().interactive_mode(None, None)

@@ -38,10 +38,10 @@ For example, if you want to challenge your ai "Bobby" at connect 4, you have to 
 
 ```bash
 # Train Bobby to play Connect 4
-python3 learn connect4 connect4/default.config Bobby
+python3 turboAI.py learn connect4 connect4/default.config Bobby
 
 # Play against Bobby as player 2
-python3 play_human_vs_ai connect4 2 Boby
+python3 turboAI.py play_human_vs_ai connect4 2 Boby
 ```
 
 ## Implement your own game

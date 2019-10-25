@@ -19,14 +19,14 @@ def get_game(game):
         sys.exit(1)
     return games[game]
 
-def interactive_mode(game, p1, p2):
+def play_game(game, p1, p2):
     state = game.init()
     turn = 0
     while not game.end(state):
         game.print_state(state)
         move = -1
         if (p1, p2)[turn % 2]:
-            move = game.get_all_moves(state) #TODO call ai function
+            move = game.get_all_moves(state)[0] #TODO call ai function
         while move == -1:
             choice = -2
             try:
@@ -50,7 +50,7 @@ def learn(game, config, ai):
 
 def play_humans(game):
     game = get_game(game)
-    interactive_mode(game, None, None)
+    play_game(game, None, None)
 
 def play_human_vs_ai(game, human_side, ai):
     game = get_game(game)

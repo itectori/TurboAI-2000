@@ -49,11 +49,13 @@ def help():
     for c in commands:
         print(f" * {c.name}".ljust(21), f"{' '.join(c.args)}".ljust(30), "|", c.desc)
 
-if len(sys.argv) < 2:
-    help()
-else:
-    for c in commands:
-        if c.name == sys.argv[1] and len(c.args) == len(sys.argv) - 2:
-            c.func(*sys.argv[2:])
-            sys.exit(0)
-    help()
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        help()
+    else:
+        for c in commands:
+            if c.name == sys.argv[1] and len(c.args) == len(sys.argv) - 2:
+                c.func(*sys.argv[2:])
+                sys.exit(0)
+        help()
+        sys.exit(1)

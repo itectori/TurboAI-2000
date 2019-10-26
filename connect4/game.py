@@ -1,59 +1,57 @@
 import numpy as np
-import sys
 
-class Game:
-    def init(self):
-        return np.array([1, np.array([[0] * 6 for _ in range(7)]), -1])
+def init():
+    return np.array([1, np.array([[0] * 6 for _ in range(7)]), -1])
 
-    def get_all_moves(self, state):
-        return np.where(state[1].T[0] == 0)[0]
+def get_all_moves(state):
+    return np.where(state[1].T[0] == 0)[0]
 
-    def print_state(self, state):
-        value = np.array(["   ", " X ", " O "])
-        print()
-        for i in range(6):
-            print(*value[state[1].T[i]], sep="|")
-        print("|".join(["---"] * 7))
-        print(end=" ")
-        print(*range(7), sep=" | ")
-        print()
+def print_state(state):
+    value = np.array(["   ", " X ", " O "])
+    print()
+    for i in range(6):
+        print(*value[state[1].T[i]], sep="|")
+    print("|".join(["---"] * 7))
+    print(end=" ")
+    print(*range(7), sep=" | ")
+    print()
 
-    def play(self, state, action):
-        state[1][action][np.where(state[1][action] == 0)[0][-1]] = state[0]
-        state[0] -= 3
-        state[0] *= -1
-        state[2] = action
-        return state
+def play(state, action):
+    state[1][action][np.where(state[1][action] == 0)[0][-1]] = state[0]
+    state[0] -= 3
+    state[0] *= -1
+    state[2] = action
+    return state
 
-    def _check(self, state, x, y, dx, dy):
-        c = 0
-        grid = state[1]
-        first = grid[x, y]
+def _check(state, x, y, dx, dy):
+    c = 0
+    grid = state[1]
+    first = grid[x, y]
+    x += dx
+    y += dy
+    while 0 <= x < grid.shape[0] and 0 <= y < grid.shape[1]:
+        if grid[x, y] != first:
+            return c
+        c += 1
         x += dx
         y += dy
-        while 0 <= x < grid.shape[0] and 0 <= y < grid.shape[1]:
-            if grid[x, y] != first:
-                return c
-            c += 1
-            x += dx
-            y += dy
-        return c
+    return c
 
-    def end(self, state):
-        if state[2] == -1:
-            return 0
-        last_player = -(state[0] - 3)
-        x = state[2]
-        y = np.where(state[1][x] == last_player)[0][0]
-        if self._check(state, x, y, 0, 1) + self._check(state, x, y, 0, -1) >= 3:
-            return last_player
-        if self._check(state, x, y, 1, 0) + self._check(state, x, y, -1, 0) >= 3:
-            return last_player
-        if self._check(state, x, y, 1, 1) + self._check(state, x, y, -1, -1) >= 3:
-            return last_player
-        if self._check(state, x, y, -1, 1) + self._check(state, x, y, 1, -1) >= 3:
-            return last_player
-        if len(self.get_all_moves(state)) == 0:
-            return 3
+def end(state):
+    if state[2] == -1:
         return 0
+    last_player = -(state[0] - 3)
+    x = state[2]
+    y = np.where(state[1][x] == last_player)[0][0]
+    if _check(state, x, y, 0, 1) + _check(state, x, y, 0, -1) >= 3:
+        return last_player
+    if _check(state, x, y, 1, 0) + _check(state, x, y, -1, 0) >= 3:
+        return last_player
+    if _check(state, x, y, 1, 1) + _check(state, x, y, -1, -1) >= 3:
+        return last_player
+    if _check(state, x, y, -1, 1) + _check(state, x, y, 1, -1) >= 3:
+        return last_player
+    if len(get_all_moves(state)) == 0:
+        return 3
+    return 0
 

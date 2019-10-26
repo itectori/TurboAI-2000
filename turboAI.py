@@ -1,6 +1,6 @@
 import sys
-import connect4.game as connect4
-import tictactoe.game as tictactoe
+import games.connect4.game as connect4
+import games.tictactoe.game as tictactoe
 
 class Command:
     def __init__(game, name, args, desc, func):

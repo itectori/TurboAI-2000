@@ -68,7 +68,12 @@ def play_human_vs_ai(game, human_side, ai):
         play_game(game_module, ai_model, None)
 
 def play_ais(game, ai_1, ai_2):
-    game = get_game(game)
+    game_module = get_game(game)
+    ai_1_model = MCTS.ai.load_from(game, ai_1)
+    ai_2_model = MCTS.ai.load_from(game, ai_2)
+    ai_1_model.set_game(game_module)
+    ai_2_model.set_game(game_module)
+    play_game(game_module, ai_1_model, ai_2_model)
 
 commands = [
         Command("learn", ["<game>", "<config>", "<ai>"],

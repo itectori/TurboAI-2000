@@ -1,13 +1,15 @@
 import sys
 import games.connect4.game as connect4
 import games.tictactoe.game as tictactoe
+import numpy as np
+import MCTS.ai
 
 class Command:
-    def __init__(game, name, args, desc, func):
-        game.name = name
-        game.args = args
-        game.desc = desc
-        game.func = func
+    def __init__(self, name, args, desc, func):
+        self.name = name
+        self.args = args
+        self.desc = desc
+        self.func = func
 
 def get_game(game):
     games = {
@@ -25,8 +27,9 @@ def play_game(game, p1, p2):
     while not game.end(state):
         game.print_state(state)
         move = -1
-        if (p1, p2)[turn % 2]:
-            move = game.get_all_moves(state)[0] #TODO call ai function
+        player = (p1, p2)[turn % 2]
+        if player:
+            move = player.play(state)
         while move == -1:
             choice = -2
             try:
@@ -46,14 +49,23 @@ def play_game(game, p1, p2):
     print(("", "Player 1 wins!", "Player 2 wins!", "Draw")[game.end(state)])
 
 def learn(game, config, ai):
-    game = get_game(game)
+    game_module = get_game(game)
 
 def play_humans(game):
-    game = get_game(game)
-    play_game(game, None, None)
+    game_module = get_game(game)
+    play_game(game_module, None, None)
 
 def play_human_vs_ai(game, human_side, ai):
-    game = get_game(game)
+    game_module = get_game(game)
+    if human_side != "1" and human_side != "2":
+        print("'human_side' must be either 1 or 2")
+        sys.exit(1)
+    ai_model = MCTS.ai.load_from(game, ai)
+    ai_model.set_game(game_module)
+    if human_side == "1":
+        play_game(game_module, None, ai_model)
+    else:
+        play_game(game_module, ai_model, None)
 
 def play_ais(game, ai_1, ai_2):
     game = get_game(game)

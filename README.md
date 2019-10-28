@@ -29,7 +29,7 @@ Here is the list of the available commands and their arguments:
 
 | Command | arguments | description
 |--|--|--|
-| learn | *game config ai* | Train the ai to play the given game. |
+| train | *game config ai* | Train the ai to play the given game. |
 | play_humans | *game* | Start a game between 2 humans. |
 | play_human_vs_ai | *game human_side ai* | Start a game against the given ai. **human_side** is either 1 or 2. |
 | play_ais | *game ai_1 ai_2* | Start a game between 2 ais. |

@@ -55,3 +55,11 @@ def end(state):
         return 3
     return 0
 
+def encode_input(state):
+    rdn_input = [state[0]]
+    p1 = (state[1].flatten() == 1).astype(np.int)
+    p2 = (state[1].flatten() == 2).astype(np.int)
+    for e in zip(p1, p2):
+        rdn_input += e
+    return np.array(rdn_input)
+

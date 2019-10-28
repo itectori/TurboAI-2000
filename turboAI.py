@@ -48,8 +48,9 @@ def play_game(game, p1, p2):
     game.print_state(state)
     print(("", "Player 1 wins!", "Player 2 wins!", "Draw")[game.end(state)])
 
-def learn(game, config, ai):
+def train(game, config, ai):
     game_module = get_game(game)
+    MCTS.ai.train(game, game_module, config, ai)
 
 def play_humans(game):
     game_module = get_game(game)
@@ -76,8 +77,8 @@ def play_ais(game, ai_1, ai_2):
     play_game(game_module, ai_1_model, ai_2_model)
 
 commands = [
-        Command("learn", ["<game>", "<config>", "<ai>"],
-            "Train the ai to play the given game", learn),
+        Command("train", ["<game>", "<config>", "<ai>"],
+            "Train the ai to play the given game", train),
         Command("play_humans", ["<game>"],
             "Start a game between 2 humans", play_humans),
         Command("play_human_vs_ai", ["<game>", "<human_side>", "<ai>"],

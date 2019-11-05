@@ -6,6 +6,7 @@ import os
 import sys
 import numpy as np
 import MCTS.mcts
+import json
 
 class AI:
     def __init__(self, rdn):
@@ -30,18 +31,18 @@ def load_from(game_name, ai):
     return AI(load_model(path))
 
 def train(game_name, game_module, config, name):
-    # TODO: Use config to create rdn structure
-    ### tmp ###
+    with open(config) as config_file:
+        config_json = json.load(config_file)
     model = Sequential()
-    model.add(Dense(32, input_shape=(19,), activation='relu'))
-    model.add(Dense(32, activation='relu'))
-    model.add(Dense(32, activation='sigmoid'))
-    model.add(Dense(9, activation='softmax'))
-    model.compile(optimizer='rmsprop',
-            loss='categorical_crossentropy',
+    for l in config_json["layers"]:
+        exec(f'model.add(Dense({l["out"]}, \
+                input_shape=({l["in"]},), \
+                activation=\'{l["activation"]}\'))')
+
+    model.compile(optimizer='adam', \
+            loss='categorical_crossentropy', \
             metrics=['accuracy'])
     ai = AI(model)
-    ### end tmp ###
 
     ai.set_game(game_module)
     MCTS.mcts.train(ai, game_module, config)

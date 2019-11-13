@@ -43,7 +43,7 @@ def play_game(game, p1, p2):
                 move = choice
             else:
                 print("Your choice is not a valid move")
-        game.play(state, move)
+        state = game.play(state, move)
         turn += 1
     game.print_state(state)
     print(("", "Player 1 wins!", "Player 2 wins!", "Draw")[game.end(state)])
@@ -61,8 +61,7 @@ def play_human_vs_ai(game, human_side, ai):
     if human_side != "1" and human_side != "2":
         print("'human_side' must be either 1 or 2")
         sys.exit(1)
-    ai_model = MCTS.ai.load_from(game, ai)
-    ai_model.set_game(game_module)
+    ai_model = MCTS.ai.load_from(game, ai, game_module)
     if human_side == "1":
         play_game(game_module, None, ai_model)
     else:
@@ -70,10 +69,8 @@ def play_human_vs_ai(game, human_side, ai):
 
 def play_ais(game, ai_1, ai_2):
     game_module = get_game(game)
-    ai_1_model = MCTS.ai.load_from(game, ai_1)
-    ai_2_model = MCTS.ai.load_from(game, ai_2)
-    ai_1_model.set_game(game_module)
-    ai_2_model.set_game(game_module)
+    ai_1_model = MCTS.ai.load_from(game, ai_1, game_module)
+    ai_2_model = MCTS.ai.load_from(game, ai_2, game_module)
     play_game(game_module, ai_1_model, ai_2_model)
 
 commands = [

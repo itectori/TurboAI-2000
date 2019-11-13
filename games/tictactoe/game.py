@@ -22,6 +22,9 @@ def print_state(state):
     print()
 
 def play(state, action):
+    #copy state
+    state = State(state.player, np.copy(state.grid))
+    
     state.grid[action] = state.player
     state.player -= 3
     state.player *= -1

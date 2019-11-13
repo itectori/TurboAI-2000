@@ -23,6 +23,7 @@ def print_state(state):
     print()
 
 def play(state, action):
+    state = State(state.player, np.copy(state.grid), state.last_move)
     state.grid[action][np.where(state.grid[action] == 0)[0][-1]] = state.player
     state.player -= 3
     state.player *= -1

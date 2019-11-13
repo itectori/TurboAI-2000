@@ -7,10 +7,13 @@ import sys
 import numpy as np
 import MCTS.mcts
 import json
+from shutil import copyfile
+
 
 class AI:
-    def __init__(self, rdn):
+    def __init__(self, rdn, config):
         self.rdn = rdn
+        self.config = config
 
     def set_game(self, game_module):
         self.game = game_module
@@ -23,16 +26,20 @@ class AI:
             if c in valid:
                 return c
 
+def load_config(config):
+    with open(config) as config_file:
+        return json.load(config_file)
+
+
 def load_from(game_name, ai):
     path = "ais/" + game_name + "/" + ai
     if os.path.isdir(path):
         print(ai, "does not exist")
         sys.exit(1)
-    return AI(load_model(path))
+    return AI(load_model(path), load_config(path + "_config.json"))
 
 def train(game_name, game_module, config, name):
-    with open(config) as config_file:
-        config_json = json.load(config_file)
+    config_json = load_config(config)
     model = Sequential()
     for l in config_json["layers"]:
         exec(f'model.add(Dense({l["out"]}, \
@@ -42,11 +49,12 @@ def train(game_name, game_module, config, name):
     model.compile(optimizer='adam', \
             loss='categorical_crossentropy', \
             metrics=['accuracy'])
-    ai = AI(model)
+    ai = AI(model, config_json)
 
     ai.set_game(game_module)
-    MCTS.mcts.train(ai, game_module, config)
-    if not os.path.isdir("ais/" + game_name):
-        os.makedirs("ais/" + game_name)
-    model.save("ais/" + game_name + "/" + name)
-
+    MCTS.mcts.train(ai, game_module, config_json)
+    path = "ais/" + game_name
+    if not os.path.isdir(path):
+        os.makedirs(path)
+    copyfile(config, path + "/" + name + "_config.json")
+    model.save(path + "/" + name)

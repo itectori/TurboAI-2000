@@ -32,13 +32,16 @@ def play_game(game, p1, p2):
             move = player.play(state)
         while move == -1:
             choice = -2
+            exit = 1
             try:
-                choice = int(input(f"Select a move to play {game.get_all_moves(state)} (-1 to quit):"))
+                choice = input(f"Select a move to play {game.get_all_moves(state)}:")
+                exit = 0
+                choice = int(choice)
             except:
+                if exit:
+                    sys.exit(0)
                 print("Please provide a valid number")
                 continue
-            if choice == -1:
-                sys.exit(0)
             if choice in game.get_all_moves(state):
                 move = choice
             else:

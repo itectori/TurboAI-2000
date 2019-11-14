@@ -30,7 +30,7 @@ def play_game(game, p1, p2):
         move = -1
         player = (p1, p2)[turn % 2]
         if player:
-            move = player.play()
+            move = player.play(game.board)
         while move == -1:
             choice = -2
             exit = 1
@@ -105,6 +105,7 @@ if __name__ == "__main__":
     else:
         for c in commands:
             if c.name == sys.argv[1] and len(c.args) == len(sys.argv) - 2:
+                print(c.name)
                 c.func(*sys.argv[2:])
                 sys.exit(0)
         help()

@@ -1,7 +1,7 @@
 # https://web.stanford.edu/~surag/posts/alphazero.html
 # https://www.baeldung.com/java-monte-carlo-tree-search
 
-from tree import Node
+from MCTS.tree import Node
 import random
 
 class MCTS:

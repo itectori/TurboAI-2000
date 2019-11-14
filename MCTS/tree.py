@@ -1,5 +1,5 @@
 import copy
-from uct import UCT
+from MCTS.uct import UCT
 import numpy as np
 
 class Node():

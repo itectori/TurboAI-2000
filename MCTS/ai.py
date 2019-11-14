@@ -8,6 +8,7 @@ import numpy as np
 import json
 from shutil import copyfile
 import MCTS.minimax
+from MCTS.mcts import MCTS
 
 class AI:
     def __init__(self, rdn, game, config, player):
@@ -17,8 +18,8 @@ class AI:
         self.mcts = MCTS(player)
 
     def play(self, state):
-        if self.config["minmax"]:
-            return MCTS.minimax.play(self.game, state)
+        # if self.config["minmax"]:
+        #     return MCTS.minimax.play(self.game, state)
         # TODO: call MCTS play
        
         # valid = self.game.get_all_moves(state)
@@ -27,7 +28,7 @@ class AI:
         #     if c in valid:
         #         return c
        
-        return self.mcts.find_next_move(state, 500)
+        return self.mcts.find_next_move(state, 250)
         
         
 def load_config(config):

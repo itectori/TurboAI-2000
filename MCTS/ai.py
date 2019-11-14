@@ -5,27 +5,31 @@ from keras.models import load_model
 import os
 import sys
 import numpy as np
-import MCTS.mcts
 import json
 from shutil import copyfile
 import MCTS.minimax
 
 class AI:
-    def __init__(self, rdn, game, config):
+    def __init__(self, rdn, game, config, player):
         self.rdn = rdn
         self.game = game
         self.config = config
+        self.mcts = MCTS(player)
 
     def play(self, state):
         if self.config["minmax"]:
             return MCTS.minimax.play(self.game, state)
         # TODO: call MCTS play
-        valid = self.game.get_all_moves(state)
-        y = self.rdn.predict(np.array([self.game.encode_input(state)]))[0]
-        for c in reversed(np.argsort(y)):
-            if c in valid:
-                return c
-
+       
+        # valid = self.game.get_all_moves(state)
+        # y = self.rdn.predict(np.array([self.game.encode_input(state)]))[0]
+        # for c in reversed(np.argsort(y)):
+        #     if c in valid:
+        #         return c
+       
+        return self.mcts.find_next_move(state, 500)
+        
+        
 def load_config(config):
     with open(config) as config_file:
         return json.load(config_file)
@@ -66,5 +70,6 @@ def train(game_name, game_module, config, name):
                   metrics=['accuracy'])
 
     ai = AI(model, game_module, config_json)
-    MCTS.mcts.train(ai, game_module, config_json)
+    #TODO train neural network
+    #MCTS.mcts.train(ai, game_module, config_json)
     save(model, game_name, name, config)

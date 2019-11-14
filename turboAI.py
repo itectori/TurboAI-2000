@@ -1,6 +1,7 @@
 import sys
 import games.connect4.game as connect4
-import games.tictactoe.game as tictactoe
+from games.tictactoe.game import TicTacToe as tictactoe
+#import games.tictactoe.game as tictactoe
 import numpy as np
 import MCTS.ai
 
@@ -14,7 +15,7 @@ class Command:
 def get_game(game):
     games = {
             "connect4": connect4,
-            "tictactoe": tictactoe
+            "tictactoe": tictactoe()
             }
     if game not in games:
         print("Unknown game:", game)
@@ -22,19 +23,19 @@ def get_game(game):
     return games[game]
 
 def play_game(game, p1, p2):
-    state = game.init()
+    #state = game(1)
     turn = 0
-    while not game.end(state):
-        game.print_state(state)
+    while not game.end():
+        game.print_state()
         move = -1
         player = (p1, p2)[turn % 2]
         if player:
-            move = player.play(state)
+            move = player.play()
         while move == -1:
             choice = -2
             exit = 1
             try:
-                choice = input(f"Select a move to play {game.get_all_moves(state)}:")
+                choice = input(f"Select a move to play {game.get_all_moves()}:")
                 exit = 0
                 choice = int(choice)
             except:
@@ -42,14 +43,15 @@ def play_game(game, p1, p2):
                     sys.exit(0)
                 print("Please provide a valid number")
                 continue
-            if choice in game.get_all_moves(state):
+            if choice in game.get_all_moves():
                 move = choice
             else:
                 print("Your choice is not a valid move")
-        state = game.play(state, move)
+        
+        state = game.play(move)
         turn += 1
-    game.print_state(state)
-    print(("", "Player 1 wins!", "Player 2 wins!", "Draw")[game.end(state)])
+    game.print_state()
+    print(("", "Player 1 wins!", "Player 2 wins!", "Draw")[game.end()])
 
 def train(game, config, ai):
     game_module = get_game(game)
@@ -72,8 +74,11 @@ def play_human_vs_ai(game, human_side, ai):
 
 def play_ais(game, ai_1, ai_2):
     game_module = get_game(game)
-    ai_1_model = MCTS.ai.load_from(game, ai_1, game_module)
-    ai_2_model = MCTS.ai.load_from(game, ai_2, game_module)
+    # ai_1_model = MCTS.ai.load_from(game, ai_1, game_module)
+    # ai_2_model = MCTS.ai.load_from(game, ai_2, game_module)
+    ai_1_model = MCTS.ai.AI(None, game, None, 1)
+    ai_2_model = MCTS.ai.AI(None, game, None, 2)
+    
     play_game(game_module, ai_1_model, ai_2_model)
 
 commands = [

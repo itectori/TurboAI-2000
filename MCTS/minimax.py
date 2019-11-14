@@ -1,4 +1,5 @@
 import random
+import time
 
 __nb_iter = 20
 
@@ -34,20 +35,33 @@ def minmax(game, state, depth, a = -1, b = 1):
             break
     return value
 
-def play(game, state, depth=4, nb_iter=30):
+def play(game, state, max_time=4, nb_iter=30):
     move = None
     a = -2
     __nb_iter = nb_iter
     moves = game.get_all_moves(state)
-    waiting = ""
-    print(f"\r[{waiting:<{len(moves)}}] {100*len(waiting)//len(moves)}%", end="")
-    for m in moves:
-        val = -minmax(game, game.play(state, m), depth - 1, b = -a)
-        if val > a:
-            a = val
-            move = m
-        waiting += "#"
-        print(f"\r[{waiting:<{len(moves)}}] {100*len(waiting)//len(moves)}%", end="")
-    print()
+    waiting = "." * len(moves)
+    print(f"\r[{waiting}] 0%", end="")
+    start_time = time.time()
+    depth = 0
+    while time.time() < start_time + max_time:
+        depth += 1
+        a = -2
+        for m in moves:
+            val = -minmax(game, game.play(state, m), depth - 1, b = -a)
+            if val > a:
+                a = val
+                move = m
+            approx = 0.8 * (time.time() - start_time) / max_time
+            waiting = "#" * int(len(moves) * approx)
+            waiting += "." * len(moves)
+            waiting = waiting[:len(moves)]
+            pourcent = min(100, int(100 * approx))
+            print(f"\r[{waiting}] {pourcent}%", end="")
+        if a == -1 or a == 1 or depth == 100:
+            break
+    print(f"\r[{'#' * len(moves)}] 100%")
     print(f"Confidence: {a/2 + 0.5}")
+    print(f"Depth: {depth}")
+    print(f"Time: {time.time() - start_time:.1f} seconds")
     return move

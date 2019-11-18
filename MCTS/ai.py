@@ -18,16 +18,9 @@ class AI:
         self.mcts = MCTS(player)
 
     def play(self, state):
-        # if self.config["minmax"]:
-        #     return MCTS.minimax.play(self.game, state)
-        # TODO: call MCTS play
-       
-        # valid = self.game.get_all_moves(state)
-        # y = self.rdn.predict(np.array([self.game.encode_input(state)]))[0]
-        # for c in reversed(np.argsort(y)):
-        #     if c in valid:
-        #         return c
-       
+        if self.config["minmax"]:
+            return MCTS.minimax.play(self.game, state)
+        
         return self.mcts.find_next_move(state, 250)
         
         
@@ -36,14 +29,14 @@ def load_config(config):
         return json.load(config_file)
 
 
-def load_from(game_name, ai, game_module):
+def load_from(game_name, ai, game_module, player):
     path = "ais/" + game_name + "/" + ai
     if not os.path.exists(path + "_config.json"):
         print(ai, "does not exist")
         sys.exit(1)
     if os.path.exists(path):
-        return AI(load_model(path), game_module, load_config(path + "_config.json"))
-    return AI(None, game_module, load_config(path + "_config.json"))
+        return AI(load_model(path), game_module, load_config(path + "_config.json"), player)
+    return AI(None, game_module, load_config(path + "_config.json"), player)
 
 
 def save(model, game_name, name, config):

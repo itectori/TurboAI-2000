@@ -74,10 +74,8 @@ def play_human_vs_ai(game, human_side, ai):
 
 def play_ais(game, ai_1, ai_2):
     game_module = get_game(game)
-    # ai_1_model = MCTS.ai.load_from(game, ai_1, game_module)
-    # ai_2_model = MCTS.ai.load_from(game, ai_2, game_module)
-    ai_1_model = MCTS.ai.AI(None, game, None, 1)
-    ai_2_model = MCTS.ai.AI(None, game, None, 2)
+    ai_1_model = MCTS.ai.load_from(game, ai_1, game_module)
+    ai_2_model = MCTS.ai.load_from(game, ai_2, game_module)
     
     play_game(game_module, ai_1_model, ai_2_model)
 

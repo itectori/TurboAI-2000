@@ -16,7 +16,7 @@ class Node():
         self.expanded = False
     
     def apply_move(self, move):
-        self.state.apply_move(move, self.player)
+        self.state.play(move)
         self.player = 3 - self.player
         self.opponent = 3 - self.opponent 
 
@@ -50,7 +50,7 @@ class Node():
         
         for move in moves:
             new_board = copy.deepcopy(self.state)
-            new_board.apply_move(move, self.player)
+            new_board.play(move)
             self.add_child(new_board, self.opponent, move)
         
         self.expanded = True

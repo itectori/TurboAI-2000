@@ -1,7 +1,6 @@
 import sys
 import games.connect4.game as connect4
-from games.tictactoe.game import TicTacToe as tictactoe
-#import games.tictactoe.game as tictactoe
+from games.tictactoe.game import TicTacToe
 import numpy as np
 import MCTS.ai
 
@@ -15,7 +14,7 @@ class Command:
 def get_game(game):
     games = {
             "connect4": connect4,
-            "tictactoe": tictactoe()
+            "tictactoe": TicTacToe()
             }
     if game not in games:
         print("Unknown game:", game)
@@ -30,7 +29,7 @@ def play_game(game, p1, p2):
         move = -1
         player = (p1, p2)[turn % 2]
         if player:
-            move = player.play(game.board)
+            move = player.play(game)
         while move == -1:
             choice = -2
             exit = 1
@@ -66,7 +65,7 @@ def play_human_vs_ai(game, human_side, ai):
     if human_side != "1" and human_side != "2":
         print("'human_side' must be either 1 or 2")
         sys.exit(1)
-    ai_model = MCTS.ai.load_from(game, ai, game_module)
+    ai_model = MCTS.ai.load_from(game, ai, game_module, 3 - int(human_side))
     if human_side == "1":
         play_game(game_module, None, ai_model)
     else:
@@ -74,8 +73,8 @@ def play_human_vs_ai(game, human_side, ai):
 
 def play_ais(game, ai_1, ai_2):
     game_module = get_game(game)
-    ai_1_model = MCTS.ai.load_from(game, ai_1, game_module)
-    ai_2_model = MCTS.ai.load_from(game, ai_2, game_module)
+    ai_1_model = MCTS.ai.load_from(game, ai_1, game_module, 1)
+    ai_2_model = MCTS.ai.load_from(game, ai_2, game_module, 2)
     
     play_game(game_module, ai_1_model, ai_2_model)
 

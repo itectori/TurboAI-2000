@@ -1,19 +1,21 @@
 import random
 import time
+import copy
+
 
 __nb_iter = None
 
-def evaluate(game, state):
+def evaluate(game):
     score = 0
     for _ in range(__nb_iter):
-        copy_state = state
+        game_copy = copy.deepcopy(game)
         turn = 0
-        while not game.end(copy_state):
-            moves = game.get_all_moves(copy_state)
+        while not game_copy.end():
+            moves = game_copy.get_all_moves()
             m = moves[random.randint(0, len(moves) - 1)]
-            copy_state = game.play(copy_state, m)
+            game_copy.play(m)
             turn += 1
-        if game.end(copy_state) == 3:
+        if game_copy.end() == 3:
             score += 0
         elif turn % 2 == 1:
             score += 1
@@ -21,29 +23,31 @@ def evaluate(game, state):
             score -= 1
     return score / __nb_iter
 
-def pv_search(game, state, depth, pv, pline, a = -2, b = 2):
+def pv_search(game, depth, pv, pline, a = -2, b = 2):
     if not pv:
-        return minmax(game, state, depth, pline, a, b)
-    end = game.end(state)
+        return minmax(game, depth, pline, a, b)
+    end = game.end()
     if end:
         pline[:] = []
         return 0 if end == 3 else -1
     if depth <= 0:
         pline[:] = []
-        return evaluate(game, state)
+        return evaluate(game)
 
     line = []
-    value = -pv_search(game, game.play(state, pv[0]), depth - 1, pv[1:], line, -b, -a)
+    game_copy = copy.deepcopy(game)
+    value = -pv_search(game_copy.play(pv[0]), depth - 1, pv[1:], line, -b, -a)
     if value >= b:
         return b
     if value > a:
         a = value
         pline[:] = [pv[0]] + line
 
-    for m in game.get_all_moves(state):
+    for m in game_copy.get_all_moves():
         if m == pv[0]:
             continue
-        value = -minmax(game, game.play(state, m), depth - 1, line, -b, -a)
+        game_copy = copy.deepcopy(game)
+        value = -minmax(game_copy.play(m), depth - 1, line, -b, -a)
         if value >= b:
             return b
         if value > a:
@@ -52,18 +56,19 @@ def pv_search(game, state, depth, pv, pline, a = -2, b = 2):
     return a
 
 
-def minmax(game, state, depth, pline, a = -2, b = 2):
-    end = game.end(state)
+def minmax(game, depth, pline, a = -2, b = 2):
+    end = game.end()
     if end:
         pline[:] = []
         return 0 if end == 3 else -1
     if depth <= 0:
         pline[:] = []
-        return evaluate(game, state)
+        return evaluate(game)
     value = -1
     line = []
-    for m in game.get_all_moves(state):
-        value = -minmax(game, game.play(state, m), depth - 1, line, -b, -a)
+    for m in game.get_all_moves():
+        game_copy = copy.deepcopy(game)
+        value = -minmax(game_copy.play(m), depth - 1, line, -b, -a)
         if value >= b:
             return b
         if value > a:
@@ -76,15 +81,15 @@ def log_info(depth, move, a, pourcent):
     waiting = waiting[:10]
     print(f"\rDepth: {depth:>2}", end="")
     print(f" | Best move: {move}", end="")
-    print(f" | Confidence: {a / 2 + 0.5:.2f}", end="")
+    print(f" | Evaluation: {a / 2 + 0.5:.2f}", end="")
     print(f" | {pourcent:>3}% [{waiting}]    ", end="", flush=True)
 
 
-def play(game, state, max_time=4, nb_iter=20):
+def play(game, max_time=4, nb_iter=20):
     global __nb_iter
     __nb_iter = nb_iter
     move = None
-    moves = game.get_all_moves(state)
+    moves = game.get_all_moves()
     depth = 0
     pv = []
     start_time = time.time()
@@ -93,12 +98,14 @@ def play(game, state, max_time=4, nb_iter=20):
         a = -2
         line = []
         if pv:
-            a = -pv_search(game, game.play(state, move), depth - 1, pv[1:], line, b = -a)
+            game_copy = copy.deepcopy(game)
+            a = -pv_search(game_copy.play(move), depth - 1, pv[1:], line, b = -a)
             pv[:] = [move] + line
         for m in moves:
             if pv and m == pv[0]:
                 continue
-            val = -minmax(game, game.play(state, m), depth - 1, line, b = -a)
+            game_copy = copy.deepcopy(game)
+            val = -minmax(game_copy.play(m), depth - 1, line, b = -a)
             if val > a:
                 a = val
                 move = m

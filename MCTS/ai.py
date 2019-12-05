@@ -8,18 +8,18 @@ import numpy as np
 import json
 from shutil import copyfile
 import MCTS.minimax
-from MCTS.mcts import MCTS
+from MCTS.mcts import MCTS as Tree
 
 class AI:
     def __init__(self, rdn, game, config, player):
         self.rdn = rdn
         self.game = game
         self.config = config
-        self.mcts = MCTS(player)
+        self.mcts = Tree(player)
 
     def play(self, state):
-        if self.config["minmax"]:
-            return MCTS.minimax.play(self.game, state)
+        if self.config["minimax"]:
+            return MCTS.minimax.play(state)
         
         return self.mcts.find_next_move(state, 250)
         
@@ -50,7 +50,7 @@ def save(model, game_name, name, config):
 
 def train(game_name, game_module, config, name):
     config_json = load_config(config)
-    if config_json["minmax"]:
+    if config_json["minimax"]:
         save(None, game_name, name, config)
         return
 
@@ -63,7 +63,8 @@ def train(game_name, game_module, config, name):
                   loss='categorical_crossentropy', \
                   metrics=['accuracy'])
 
-    ai = AI(model, game_module, config_json)
+    ai_1 = AI(model, game_module, config_json, 1)
+    ai_2 = AI(model, game_module, config_json, 2)
     #TODO train neural network
     #MCTS.mcts.train(ai, game_module, config_json)
-    save(model, game_name, name, config)
+    save(None, game_name, name, config) # FIXME: model = None

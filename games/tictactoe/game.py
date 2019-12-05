@@ -41,7 +41,8 @@ class TicTacToe:
         return 0
 
     def encode_input(self):
-        rdn_input = [self.player]
+        rdn_input = [0, 0]
+        rdn_input[self.player - 1] = 1
         p1 = (self.grid == 1).astype(np.int)
         p2 = (self.grid == 2).astype(np.int)
         for e in zip(p1, p2):

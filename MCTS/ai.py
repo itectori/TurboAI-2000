@@ -1,7 +1,6 @@
 import keras
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.models import load_model
+from keras.layers import Input, Dense
+from keras.models import load_model, Model
 import os
 import sys
 import numpy as np
@@ -9,6 +8,7 @@ import json
 from shutil import copyfile
 import MCTS.minimax
 from MCTS.mcts import MCTS as Tree
+import keras.backend as K
 
 class AI:
     def __init__(self, rdn, game, config, player):
@@ -48,23 +48,33 @@ def save(model, game_name, name, config):
         model.save(path + "/" + name)
 
 
+def loss_eval(y_true, y_pred):
+    return K.sum(K.square(y_pred - y_true))
+
+def loss_p(y_true, y_pred):
+    return -K.dot(y_true, K.transpose(K.log(y_pred)))
+
 def train(game_name, game_module, config, name):
     config_json = load_config(config)
     if config_json["minimax"]:
         save(None, game_name, name, config)
         return
 
-    model = Sequential()
-    for l in config_json["layers"]:
-        exec(f'model.add(Dense({l["out"]}, \
-                input_shape=({l["in"]},), \
-                activation=\'{l["activation"]}\'))')
+    input_layer = Input(shape=(len(game_module.encode_input()),))
+
+    hidden = Dense(18, activation='relu')(input_layer)
+    hidden = Dense(18, activation='relu')(hidden)
+    p = Dense(9, activation='softmax', name='p')(hidden)
+    eval_ = Dense(1, activation='tanh', name='eval')(hidden)
+    model = Model(inputs=[input_layer], outputs=[p, eval_])
+
     model.compile(optimizer='adam', \
-                  loss='categorical_crossentropy', \
-                  metrics=['accuracy'])
+            loss={"p": loss_p, "eval": loss_eval}, \
+                  metrics=['mae'],
+                  loss_weights=[1., 1.])
 
     ai_1 = AI(model, game_module, config_json, 1)
     ai_2 = AI(model, game_module, config_json, 2)
     #TODO train neural network
     #MCTS.mcts.train(ai, game_module, config_json)
-    save(None, game_name, name, config) # FIXME: model = None
+    save(model, game_name, name, config)

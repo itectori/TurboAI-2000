@@ -21,7 +21,7 @@ class AI:
         if self.config["minimax"]:
             return MCTS.minimax.play(state)
         
-        return self.mcts.find_next_move(state, 250)
+        return self.mcts.find_next_move(state, 1000)
         
         
 def load_config(config):

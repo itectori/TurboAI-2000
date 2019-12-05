@@ -3,6 +3,7 @@ import games.connect4.game as connect4
 from games.tictactoe.game import TicTacToe
 import numpy as np
 import MCTS.ai
+import random
 
 class Command:
     def __init__(self, name, args, desc, func):
@@ -97,6 +98,8 @@ def help():
         print(f" * {c.name}".ljust(21), f"{' '.join(c.args)}".ljust(30), "|", c.desc)
 
 if __name__ == "__main__":
+    #random.seed(10)
+    #np.random.seed(seed=0)
     if len(sys.argv) < 2:
         help()
     else:

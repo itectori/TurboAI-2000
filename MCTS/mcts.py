@@ -6,6 +6,7 @@ import random
 
 class MCTS:
     def __init__(self, player):
+        random.seed(10)
         self.player = player
 
     def find_next_move(self, state, nb_iter):

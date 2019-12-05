@@ -59,7 +59,7 @@ class Node():
 
         copy_node = copy.deepcopy(self)
         end = copy_node.state.end() #player 1 / player 2 or draw
-        if end: #not a draw, game already over
+        if end==1 or end==2: #not a draw, game already over
             self.win_score = (1 if end==self.original_player else -1 )*np.inf
             return end
             
@@ -67,36 +67,43 @@ class Node():
             continue
         
         return copy_node.state.end()
-        
+
     def back_prop(self, player):
         t_node = self
         while(t_node is not None):
             t_node.visit_count += 1
+            if (3-t_node.original_player) == player: #parent played and not a draw
+                t_node.win_score += 1
+            
+            #if (3-t_node.original_player) == 3: #parent played and not a draw
+            #    t_node.win_score += 0.5
+            
 
-            #opponent and not a draw
-            if t_node.original_player == player and player:
-                t_node.win_score += 10
+            if t_node.original_player == player: #parent played and not a draw
+                t_node.win_score -= 1
             
-            # if t_node.original_player == player and player:
-            #     t_node.win_score -= 10
-            
+
+
             t_node = t_node.parent
 
     
     def get_child_max_score(self):
+        print(list(map(lambda n : n.win_score,self.children)))
         return max(self.children, key=lambda n : n.win_score)
 
     def find_best_node(self):
+        #print(max(self.children, key=lambda n : UCT(n.parent.visit_count, n.win_score, n.visit_count)))
+        '''
+        def lol(n):
+            t = UCT(n.parent.visit_count, n.win_score, n.visit_count)
+            print(t)
+            return t
+        '''
         return max(self.children, key=lambda n : UCT(n.parent.visit_count, n.win_score, n.visit_count))
+        #return max(self.children, key=lambda n : lol(n))
 
     def select_promising_node(self):
         node = self
         while node.children:
             node = node.find_best_node()
         return node
-
-
-    # def pprint(self):
-    #     print(self.data)
-    #     for i in self.children:
-    #         i.pprint()

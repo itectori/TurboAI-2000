@@ -58,21 +58,16 @@ class Node():
     def simulate_playout(self):
 
         copy_node = copy.deepcopy(self)
-        #self.state.print_state()
-        if copy_node.state.end() == (3-self.player):
-            self.win_score = -np.inf
-            return (3-self.player)
-
-        # if copy_node.state.end() == self.player:
-        #     self.win_score = np.inf
-        #     return self.player
-        
+        end = copy_node.state.end() #player 1 / player 2 or draw
+        if end: #not a draw, game already over
+            self.win_score = (1 if end==self.original_player else -1 )*np.inf
+            return end
+            
         while copy_node.random_move() and not copy_node.state.end():
             continue
         
-        #self.state.print_state()
         return copy_node.state.end()
-
+        
     def back_prop(self, player):
         t_node = self
         while(t_node is not None):

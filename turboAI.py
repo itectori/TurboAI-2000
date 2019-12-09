@@ -47,7 +47,8 @@ def play_game(game, p1, p2):
                 move = choice
             else:
                 print("Your choice is not a valid move")
-        
+        if p1: p1.notify_move(move)
+        if p2: p2.notify_move(move)
         state = game.play(move)
         turn += 1
     game.print_state()
@@ -105,7 +106,6 @@ if __name__ == "__main__":
     else:
         for c in commands:
             if c.name == sys.argv[1] and len(c.args) == len(sys.argv) - 2:
-                print(c.name)
                 c.func(*sys.argv[2:])
                 sys.exit(0)
         help()

@@ -7,7 +7,8 @@ import numpy as np
 import json
 from shutil import copyfile
 import MCTS.minimax
-from MCTS.mcts import MCTS as Tree
+#from MCTS.mcts import MCTS as Tree
+from MCTS.mcts2 import Tree
 import keras.backend as K
 
 class AI:
@@ -15,13 +16,38 @@ class AI:
         self.rdn = rdn
         self.game = game
         self.config = config
-        self.mcts = Tree(player)
+        #self.mcts = Tree(player)
+        self.mcts = Tree()
+        self.board = None
+
+    def notify_move(self, move):
+        self.game = self.mcts.move_to_children(self.game, move)
+
+    def predict(self, board):
+        return [1. / 9.] * 9, 0.
 
     def play(self, state):
         if self.config["minimax"]:
             return MCTS.minimax.play(state)
+
+        #return self.mcts.find_next_move(state, 1000)
         
-        return self.mcts.find_next_move(state, 1000)
+        print("Play")
+
+        state.print_state()
+
+        s = 0
+        for i in range(5000):
+            s += self.mcts.search(self.game, self)
+            print(f"{s / (i + 1):.5f}", end="\r")
+        print()
+        pi = self.mcts.pi(self.game)
+        print("pi:", pi)
+        valids = state.get_all_moves()
+        for m in reversed(np.argsort(pi)):
+            if m in valids:
+                return m
+        
         
         
 def load_config(config):
@@ -35,7 +61,7 @@ def load_from(game_name, ai, game_module, player):
         print(ai, "does not exist")
         sys.exit(1)
     if os.path.exists(path):
-        return AI(load_model(path), game_module, load_config(path + "_config.json"), player)
+        return AI(load_model(path,  custom_objects={"loss_eval": loss_eval, "loss_p": loss_p}), game_module, load_config(path + "_config.json"), player)
     return AI(None, game_module, load_config(path + "_config.json"), player)
 
 
@@ -70,11 +96,20 @@ def train(game_name, game_module, config, name):
 
     model.compile(optimizer='adam', \
             loss={"p": loss_p, "eval": loss_eval}, \
-                  metrics=['mae'],
+                  metrics=['accuracy'],
                   loss_weights=[1., 1.])
 
     ai_1 = AI(model, game_module, config_json, 1)
     ai_2 = AI(model, game_module, config_json, 2)
+
+    """
+    X = [[game_module.encode_input()]]
+    Y = [[[0, 0, 0, 0, 1, 0, 0, 0, 0]],[-1]]
+    print(model.predict(X))
+    model.fit(X, Y, epochs=500, verbose=0)
+    print(model.predict(X))
+    """
+
     #TODO train neural network
     #MCTS.mcts.train(ai, game_module, config_json)
     save(model, game_name, name, config)

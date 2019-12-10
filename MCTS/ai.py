@@ -30,25 +30,7 @@ class AI:
         if self.config["minimax"]:
             return MCTS.minimax.play(state)
 
-        #return self.mcts.find_next_move(state, 1000)
-        
-        print("Play")
-
-        state.print_state()
-
-        s = 0
-        for i in range(5000):
-            s += self.mcts.search(self.game, self)
-            print(f"{s / (i + 1):.5f}", end="\r")
-        print()
-        pi = self.mcts.pi(self.game)
-        print("pi:", pi)
-        valids = state.get_all_moves()
-        for m in reversed(np.argsort(pi)):
-            if m in valids:
-                return m
-        
-        
+        return self.mcts.play(self.game, self, 5000)
         
 def load_config(config):
     with open(config) as config_file:

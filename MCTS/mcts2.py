@@ -1,5 +1,7 @@
 import copy
 import math
+import time
+import numpy as np
 
 class Tree:
 
@@ -10,13 +12,34 @@ class Tree:
         self.N = {}
         self.Q = {}
 
+    def display(self, best_move, evaluation, percent):
+        percent = min(100, int(percent))
+        print(end=f"Best move: {best_move} ")
+        print(end=f"| Evaluation: {evaluation:.2f} ")
+        print(end=f"| {percent:>3}% ")
+        print(end=f"[{'#' * (percent // 10):<10}]\r")
+
+    def play(self, board, ai, nb_iter):
+        s = 0
+        disp_i = nb_iter // 11
+        start_time = time.time()
+        for i in range(nb_iter):
+            s += self.search(board, ai)
+            if i % disp_i == 0:
+                self.display(np.argmax(self.pi(board)), (1 - s/(i+1))/2, 100 * i / nb_iter)
+        self.display(np.argmax(self.pi(board)), (1 - s/nb_iter)/2, 100)
+        print()
+        pi = self.pi(board)
+        print(f"Time: {time.time() - start_time:.1f} seconds")
+        print(f"Pi: {[int(i * 100)/100 for i in pi]}")
+        return np.argmax(pi)
+
     def move_to_children(self, board, best_move):
         if board in self.children and self.children[board][best_move] is not None:
             return self.children[board][best_move]
         board_copy = copy.deepcopy(board)
         board_copy.play(best_move)
         return board_copy
-
 
     def select_next_board(self, board):
         max_u = -float("inf")
@@ -55,4 +78,6 @@ class Tree:
 
     def pi(self, board):
         s = sum(self.N[board])
+        if s == 0:
+            return [0 for _ in self.N[board]]
         return [n / s for n in self.N[board]]

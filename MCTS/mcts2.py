@@ -12,26 +12,29 @@ class Tree:
         self.N = {}
         self.Q = {}
 
-    def display(self, best_move, evaluation, percent):
+    def log_info(self, best_move, evaluation, percent):
         percent = min(100, int(percent))
+        waiting = '#' * (percent // 10) + ".........."
         print(end=f"Best move: {best_move} ")
         print(end=f"| Evaluation: {evaluation:.2f} ")
         print(end=f"| {percent:>3}% ")
-        print(end=f"[{'#' * (percent // 10):<10}]\r")
+        print(end=f"[{waiting[:10]}]\r")
 
-    def play(self, board, ai, nb_iter):
+    def play(self, board, ai, nb_iter, verbose=True):
+        assert nb_iter >= 2
         s = 0
-        disp_i = nb_iter // 11
+        disp_i = max(1, nb_iter // 11)
         start_time = time.time()
         for i in range(nb_iter):
             s += self.search(board, ai)
-            if i % disp_i == 0:
-                self.display(np.argmax(self.pi(board)), (1 - s/(i+1))/2, 100 * i / nb_iter)
-        self.display(np.argmax(self.pi(board)), (1 - s/nb_iter)/2, 100)
-        print()
+            if verbose and i % disp_i == 0:
+                self.log_info(np.argmax(self.pi(board)), (1 - s/(i+1))/2, 100 * i / nb_iter)
         pi = self.pi(board)
-        print(f"Time: {time.time() - start_time:.1f} seconds")
-        print(f"Pi: {[int(i * 100)/100 for i in pi]}")
+        if verbose:
+            self.log_info(np.argmax(pi), (1 - s/nb_iter)/2, 100)
+            print()
+            print(f"Time: {time.time() - start_time:.1f} seconds")
+            print(f"Pi: {[int(i * 100)/100 for i in pi]}")
         return np.argmax(pi)
 
     def move_to_children(self, board, best_move):
@@ -49,6 +52,9 @@ class Tree:
             if u > max_u:
                 max_u = u
                 best_move = m
+            elif u == max_u and np.random.randint(2) == 1:
+                best_move = m
+
         return self.move_to_children(board, best_move), best_move
 
     def search(self, board, ai):

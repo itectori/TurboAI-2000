@@ -16,21 +16,24 @@ class AI:
         self.rdn = rdn
         self.game = game
         self.config = config
-        #self.mcts = Tree(player)
         self.mcts = Tree()
-        self.board = None
+        self.board = game
+
+    def reset(self):
+        self.mcts = Tree()
+        self.board = self.game
 
     def notify_move(self, move):
-        self.game = self.mcts.move_to_children(self.game, move)
+        self.board = self.mcts.move_to_children(self.board, move)
 
     def predict(self, board):
         return [1. / 9.] * 9, 0.
 
-    def play(self, state):
+    def play(self, state, verbose=True):
         if self.config["minimax"]:
-            return MCTS.minimax.play(state)
+            return MCTS.minimax.play(self.board, verbose=verbose)
 
-        return self.mcts.play(self.game, self, 5000)
+        return self.mcts.play(self.board, self, 2, verbose=verbose)
         
 def load_config(config):
     with open(config) as config_file:

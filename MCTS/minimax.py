@@ -85,7 +85,7 @@ def log_info(depth, move, a, pourcent):
     print(f" | {pourcent:>3}% [{waiting}]    ", end="", flush=True)
 
 
-def play(game, max_time=4, nb_iter=20):
+def play(game, max_time=4, nb_iter=20, verbose=True):
     global __nb_iter
     __nb_iter = nb_iter
     move = None
@@ -112,11 +112,13 @@ def play(game, max_time=4, nb_iter=20):
                 pv[:] = [m] + line
             approx = 0.8 * (time.time() - start_time) / max_time
             pourcent = min(100, int(100 * approx))
-            log_info(depth, move, a, pourcent)
+            if verbose:
+                log_info(depth, move, a, pourcent)
         if depth >= 99:
             break
-    log_info(depth, move, a, 100)
-    print()
-    print(f"Time: {time.time() - start_time:.1f} seconds")
-    print(f"Principal variation: {pv}")
+    if verbose:
+        log_info(depth, move, a, 100)
+        print()
+        print(f"Time: {time.time() - start_time:.1f} seconds")
+        print(f"Principal variation: {pv}")
     return move

@@ -5,6 +5,8 @@ import numpy as np
 import MCTS.ai
 import random
 
+from MCTS.validation import score
+
 class Command:
     def __init__(self, name, args, desc, func):
         self.name = name
@@ -23,7 +25,6 @@ def get_game(game):
     return games[game]
 
 def play_game(game, p1, p2):
-    #state = game(1)
     turn = 0
     while not game.end():
         game.print_state()
@@ -73,12 +74,14 @@ def play_human_vs_ai(game, human_side, ai):
     else:
         play_game(game_module, ai_model, None)
 
-def play_ais(game, ai_1, ai_2):
+def play_ais(game, ai_1, ai_2, nb_game):
     game_module = get_game(game)
     ai_1_model = MCTS.ai.load_from(game, ai_1, game_module, 1)
     ai_2_model = MCTS.ai.load_from(game, ai_2, game_module, 2)
-    
-    play_game(game_module, ai_1_model, ai_2_model)
+    if int(nb_game) == 1:
+        play_game(game_module, ai_1_model, ai_2_model)
+    else:
+        score(game_module, ai_1_model, ai_2_model, int(nb_game))
 
 commands = [
         Command("train", ["<game>", "<config>", "<ai>"],
@@ -87,8 +90,8 @@ commands = [
             "Start a game between 2 humans", play_humans),
         Command("play_human_vs_ai", ["<game>", "<human_side>", "<ai>"],
             "Start a game against the given ai", play_human_vs_ai),
-        Command("play_ais", ["<game>", "<ai_1>", "<ai_2>"],
-            "Start a game between 2 ais", play_ais)
+        Command("play_ais", ["<game>", "<ai_1>", "<ai_2>", "<nb>"],
+            "Start 'nb' game(s) between 2 ais", play_ais)
         ]
 
 

@@ -3,11 +3,11 @@ import time
 import copy
 
 
-__nb_iter = None
+__nb_iter_eval = None
 
 def evaluate(game):
     score = 0
-    for _ in range(__nb_iter):
+    for _ in range(__nb_iter_eval):
         game_copy = copy.deepcopy(game)
         turn = 0
         while not game_copy.end():
@@ -21,7 +21,7 @@ def evaluate(game):
             score += 1
         else:
             score -= 1
-    return score / __nb_iter
+    return score / __nb_iter_eval
 
 def pv_search(game, depth, pv, pline, a = -2, b = 2):
     if not pv:
@@ -85,15 +85,15 @@ def log_info(depth, move, a, pourcent):
     print(f" | {pourcent:>3}% [{waiting}]    ", end="", flush=True)
 
 
-def play(game, max_time=4, nb_iter=20, verbose=True):
-    global __nb_iter
-    __nb_iter = nb_iter
+def play(game, start_depth=0, max_depth=99, max_time=4, nb_iter_eval=20, verbose=True):
+    global __nb_iter_eval
+    __nb_iter_eval = nb_iter_eval
     move = None
     moves = game.get_all_moves()
-    depth = 0
+    depth = start_depth - 1
     pv = []
     start_time = time.time()
-    while time.time() < start_time + max_time:
+    while time.time() < start_time + max_time and depth < max_depth:
         depth += 1
         a = -2
         line = []
@@ -114,8 +114,6 @@ def play(game, max_time=4, nb_iter=20, verbose=True):
             pourcent = min(100, int(100 * approx))
             if verbose:
                 log_info(depth, move, a, pourcent)
-        if depth >= 99:
-            break
     if verbose:
         log_info(depth, move, a, 100)
         print()

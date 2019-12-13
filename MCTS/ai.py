@@ -10,6 +10,7 @@ import MCTS.minimax
 #from MCTS.mcts import MCTS as Tree
 from MCTS.mcts2 import Tree
 import keras.backend as K
+import random
 
 class AI:
     def __init__(self, rdn, game, config, player):
@@ -30,10 +31,19 @@ class AI:
         return [1. / 9.] * 9, 0.
 
     def play(self, state, verbose=True):
-        if self.config["minimax"]:
-            return MCTS.minimax.play(self.board, verbose=verbose)
-
-        return self.mcts.play(self.board, self, 2, verbose=verbose)
+        if self.config["algo"] == "minimax":
+            return MCTS.minimax.play(self.board,
+                                        start_depth=self.config["start_depth"],
+                                        max_depth=self.config["max_depth"],
+                                        max_time=self.config["max_time"],
+                                        nb_iter_eval=self.config["nb_iter_eval"],
+                                        verbose=verbose)
+        if self.config["algo"] == "random":
+            return random.choice(state.get_all_moves())
+        return self.mcts.play(self.board,
+                                self,
+                                self.config["play_simulation"],
+                                verbose=verbose)
         
 def load_config(config):
     with open(config) as config_file:
@@ -67,19 +77,19 @@ def loss_p(y_true, y_pred):
 
 def train(game_name, game_module, config, name):
     config_json = load_config(config)
-    if config_json["minimax"]:
+    if config_json["algo"] != "MCTS":
         save(None, game_name, name, config)
         return
 
     input_layer = Input(shape=(len(game_module.encode_input()),))
-
-    hidden = Dense(18, activation='relu')(input_layer)
-    hidden = Dense(18, activation='relu')(hidden)
-    p = Dense(9, activation='softmax', name='p')(hidden)
-    eval_ = Dense(1, activation='tanh', name='eval')(hidden)
+    layer = input_layer
+    for l in config_json["nn"]["hidden_layers"]:
+        layer = Dense(l["size"], activation=l["activation"])(layer)
+    p = Dense(config_json["nn"]["policy_size"], activation='softmax', name='p')(layer)
+    eval_ = Dense(1, activation='tanh', name='eval')(layer)
     model = Model(inputs=[input_layer], outputs=[p, eval_])
 
-    model.compile(optimizer='adam', \
+    model.compile(optimizer=config_json["nn"]["optimizer"], \
             loss={"p": loss_p, "eval": loss_eval}, \
                   metrics=['accuracy'],
                   loss_weights=[1., 1.])

@@ -1,4 +1,18 @@
 {
-    "minimax": false,
-    "layers": []
+    "algo": "MCTS",
+    "play_simulation": 25,
+    "nn": {
+        "hidden_layers": [
+            {
+                "size": 18,
+                "activation": "relu"
+            },
+            {
+                "size": 18,
+                "activation": "relu"
+            }
+        ],
+        "policy_size": 9,
+        "optimizer": "adam"
+    }
 }

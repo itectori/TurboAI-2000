@@ -1,3 +1,7 @@
 {
-    "minimax": true
+    "algo": "minimax",
+    "start_depth": 1,
+    "max_depth": 42,
+    "max_time": 4,
+    "nb_iter_eval": 20
 }

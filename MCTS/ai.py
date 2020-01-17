@@ -11,26 +11,35 @@ import MCTS.minimax
 from MCTS.mcts2 import Tree
 import keras.backend as K
 import random
+import copy
 
 class AI:
     def __init__(self, rdn, game, config, player):
         self.rdn = rdn
-        self.game = game
+        self.game = copy.deepcopy(game)
         self.config = config
-        self.mcts = Tree()
-        self.board = game
+        if self.config["algo"] == "MCTS":
+            self.mcts = Tree(self.config["c_puct"], self.config["tau"])
+        self.board = copy.deepcopy(game)
 
     def reset(self):
-        self.mcts = Tree()
-        self.board = self.game
+        if self.config["algo"] == "MCTS":
+            self.mcts = Tree(self.config["c_puct"], self.config["tau"])
+        self.board = copy.deepcopy(self.game)
 
     def notify_move(self, move):
-        self.board = self.mcts.move_to_children(self.board, move)
+        if self.config["algo"] == "MCTS":
+            self.board = self.mcts.move_to_children(self.board, move)
+        else:
+            self.board = self.board.play(move)
 
     def predict(self, board):
-        return [1. / 9.] * 9, 0.
+        pred = self.rdn.predict([[board.encode_input()]])
+        pi = pred[0][0]
+        eval_ = pred[1][0][0]
+        return pi, eval_
 
-    def play(self, state, verbose=True):
+    def play(self, verbose=True):
         if self.config["algo"] == "minimax":
             return MCTS.minimax.play(self.board,
                                         start_depth=self.config["start_depth"],
@@ -38,8 +47,10 @@ class AI:
                                         max_time=self.config["max_time"],
                                         nb_iter_eval=self.config["nb_iter_eval"],
                                         verbose=verbose)
+
         if self.config["algo"] == "random":
-            return random.choice(state.get_all_moves())
+            return random.choice(self.board.get_all_moves())
+
         return self.mcts.play(self.board,
                                 self,
                                 self.config["play_simulation"],

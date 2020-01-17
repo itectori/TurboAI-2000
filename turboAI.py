@@ -31,7 +31,7 @@ def play_game(game, p1, p2):
         move = -1
         player = (p1, p2)[turn % 2]
         if player:
-            move = player.play(game)
+            move = player.play()
         while move == -1:
             choice = -2
             exit = 1

@@ -1,22 +1,21 @@
 {
+    "game": "tictactoe",
     "algo": "MCTS",
-    "play_simulation": 25,
+    "play_simulation": 250,
+    "c_puct": 0.2,
+    "tau": 1,
     "nn": {
         "hidden_layers": [
             {
-                "size": 42,
+                "size": 18,
                 "activation": "relu"
             },
             {
-                "size": 42,
-                "activation": "relu"
-            },
-            {
-                "size": 42,
+                "size": 18,
                 "activation": "relu"
             }
         ],
-        "policy_size": 7,
+        "policy_size": 9,
         "optimizer": "adam"
     }
 }

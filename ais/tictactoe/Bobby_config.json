@@ -1,6 +1,8 @@
 {
     "algo": "MCTS",
     "play_simulation": 25,
+    "c_puct": 0.2,
+    "tau": 1,
     "nn": {
         "hidden_layers": [
             {

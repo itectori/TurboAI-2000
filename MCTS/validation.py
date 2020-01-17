@@ -6,9 +6,9 @@ def play(game, p1, p2):
     while not game.end():
         move = -1
         if turn % 2 == 0:
-            move = p1.play(game, False)
+            move = p1.play(False)
         else:
-            move = p2.play(game, False)
+            move = p2.play(False)
         p1.notify_move(move)
         p2.notify_move(move)
         game.play(move)

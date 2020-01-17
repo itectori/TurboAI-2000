@@ -5,7 +5,9 @@ import numpy as np
 
 class Tree:
 
-    def __init__(self):
+    def __init__(self, c_puct, tau):
+        self.c_puct = c_puct
+        self.tau = tau
         self.visited = set()
         self.children = {}
         self.P = {}
@@ -35,7 +37,7 @@ class Tree:
             print()
             print(f"Time: {time.time() - start_time:.1f} seconds")
             print(f"Pi: {[int(i * 100)/100 for i in pi]}")
-        return np.argmax(pi)
+        return np.random.choice(range(len(pi)), p=pi)
 
     def move_to_children(self, board, best_move):
         if board in self.children and self.children[board][best_move] is not None:
@@ -48,11 +50,9 @@ class Tree:
         max_u = -float("inf")
         best_move = -1
         for m in board.get_all_moves():
-            u = self.Q[board][m] + 0.1 * self.P[board][m] * math.sqrt(sum(self.N[board])) / (1. + self.N[board][m])
+            u = self.Q[board][m] + self.c_puct * self.P[board][m] * math.sqrt(sum(self.N[board])) / (1. + self.N[board][m])
             if u > max_u:
                 max_u = u
-                best_move = m
-            elif u == max_u and np.random.randint(2) == 1:
                 best_move = m
 
         return self.move_to_children(board, best_move), best_move
@@ -83,7 +83,7 @@ class Tree:
         return -v
 
     def pi(self, board):
-        s = sum(self.N[board])
+        s = sum(np.power(self.N[board], 1 / self.tau))
         if s == 0:
             return [0 for _ in self.N[board]]
-        return [n / s for n in self.N[board]]
+        return [math.pow(n, 1 / self.tau) / s for n in self.N[board]]

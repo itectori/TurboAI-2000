@@ -8,6 +8,7 @@ import json
 from shutil import copyfile
 import MCTS.minimax
 #from MCTS.mcts import MCTS as Tree
+from MCTS.coach import Coach
 from MCTS.mcts2 import Tree
 import keras.backend as K
 import random
@@ -106,15 +107,25 @@ def train(game_name, game_module, config, name):
                   loss_weights=[1., 1.])
 
     ai_1 = AI(model, game_module, config_json, 1)
-    ai_2 = AI(model, game_module, config_json, 2)
+    #ai_2 = AI(model, game_module, config_json, 2)
 
-    """
+    '''
     X = [[game_module.encode_input()]]
     Y = [[[0, 0, 0, 0, 1, 0, 0, 0, 0]],[-1]]
     print(model.predict(X))
     model.fit(X, Y, epochs=500, verbose=0)
+    print(model.predict(X))'''
+    
+    '''
+    X = [[game_module.encode_input(), game_module.encode_input()]]
+    Y = [[[0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0]],[-1, -1]]
     print(model.predict(X))
-    """
+    model.fit(X, Y, epochs=500, verbose=0)
+    print(model.predict(X))'''
+
+
+    coach = Coach(ai_1)
+    coach.learn()
 
     #TODO train neural network
     #MCTS.mcts.train(ai, game_module, config_json)

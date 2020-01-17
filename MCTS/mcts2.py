@@ -23,6 +23,11 @@ class Tree:
         print(end=f"[{waiting[:10]}]\r")
 
     def play(self, board, ai, nb_iter, verbose=True):
+        pi= self.get_proba(board, ai, nb_iter, verbose)
+        #print(np.argmax(pi))
+        return np.random.choice(range(len(pi)), p=pi)
+    
+    def get_proba(self, board, ai, nb_iter, verbose=True):
         assert nb_iter >= 2
         s = 0
         disp_i = max(1, nb_iter // 11)
@@ -37,7 +42,7 @@ class Tree:
             print()
             print(f"Time: {time.time() - start_time:.1f} seconds")
             print(f"Pi: {[int(i * 100)/100 for i in pi]}")
-        return np.random.choice(range(len(pi)), p=pi)
+        return pi
 
     def move_to_children(self, board, best_move):
         if board in self.children and self.children[board][best_move] is not None:

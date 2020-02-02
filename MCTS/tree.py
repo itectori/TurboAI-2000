@@ -1,3 +1,4 @@
+"""
 import copy
 from MCTS.uct import UCT
 import numpy as np
@@ -107,3 +108,4 @@ class Node():
         while node.children:
             node = node.find_best_node()
         return node
+"""

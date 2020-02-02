@@ -4,10 +4,12 @@ import time
 import numpy as np
 
 class Tree:
-
     def __init__(self, c_puct, tau):
         self.c_puct = c_puct
         self.tau = tau
+        self.epsilon = 0.25
+        self.dirichlet_coeff = 0.3*35
+        self.first_board = True
         self.visited = set()
         self.children = {}
         self.P = {}
@@ -22,9 +24,12 @@ class Tree:
         print(end=f"| {percent:>3}% ")
         print(end=f"[{waiting[:10]}]\r")
 
+    def play_best_move(self, board, ai, nb_iter, verbose=True):
+        pi= self.get_proba(board, ai, nb_iter, verbose)
+        return np.argmax(pi)
+
     def play(self, board, ai, nb_iter, verbose=True):
         pi= self.get_proba(board, ai, nb_iter, verbose)
-        #print(np.argmax(pi))
         return np.random.choice(range(len(pi)), p=pi)
     
     def get_proba(self, board, ai, nb_iter, verbose=True):
@@ -76,6 +81,9 @@ class Tree:
             self.N[board] = [0.] * len(p)
             self.Q[board] = [0.] * len(p)
             self.P[board] = p
+            if self.first_board:
+                self.P[board] = (1-self.epsilon)*self.P[board] +  self.epsilon*np.random.dirichlet([self.dirichlet_coeff/len(p)]*len(p))
+                self.first_board = False
             return -v
 
         next_board, best_move = self.select_next_board(board)

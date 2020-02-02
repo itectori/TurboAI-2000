@@ -12,10 +12,9 @@ class Coach():
     def __init__(self, ai):
         #self.pnet = self.nnet.__class__(self.game)  # the competitor network
         self.ai = ai
+        self.batch_size = 100
         self.trainExamplesHistoryX = [[]]
         self.trainExamplesHistoryY = [[],[]]
-
-
 
     def executeEpisode(self):
         states = []
@@ -49,6 +48,11 @@ class Coach():
                     rewards.append(reward)
                     reward *=-1
                 return states, policy, rewards
+    
+    def _check_len_insert(self, l, data):
+        while len(l)+len(data) > self.batch_size:
+            l.pop(0)
+        l += data
 
     def learn(self):
         """
@@ -68,9 +72,10 @@ class Coach():
                 self.ai.reset()
                 states,policy,rewards = self.executeEpisode()
                 
-                self.trainExamplesHistoryX[0] += states 
-                self.trainExamplesHistoryY[0] += policy
-                self.trainExamplesHistoryY[1] += rewards
+                self._check_len_insert(self.trainExamplesHistoryX[0], states)
+                self._check_len_insert(self.trainExamplesHistoryY[0], policy)
+                self._check_len_insert(self.trainExamplesHistoryY[1], rewards)
+
                 
             '''
             self.trainExamplesHistory.append(iterationTrainExamples)
@@ -84,6 +89,8 @@ class Coach():
             # shuffle examples before training
 
             # training new network, keeping a copy of the old one
+            
+
             path = f"temp/model_{i}"
             self.ai.rdn.save(path)
             self.ai.rdn.fit(self.trainExamplesHistoryX, self.trainExamplesHistoryY, epochs=100, verbose=0)

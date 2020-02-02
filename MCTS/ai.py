@@ -52,6 +52,24 @@ class AI:
         if self.config["algo"] == "random":
             return random.choice(self.board.get_all_moves())
 
+        return self.mcts.play_best_move(self.board,
+                                self,
+                                self.config["play_simulation"],
+                                verbose=verbose)
+
+    
+    def play_for_eval(self, verbose=True):
+        if self.config["algo"] == "minimax":
+            return MCTS.minimax.play(self.board,
+                                        start_depth=self.config["start_depth"],
+                                        max_depth=self.config["max_depth"],
+                                        max_time=self.config["max_time"],
+                                        nb_iter_eval=self.config["nb_iter_eval"],
+                                        verbose=verbose)
+
+        if self.config["algo"] == "random":
+            return random.choice(self.board.get_all_moves())
+
         return self.mcts.play(self.board,
                                 self,
                                 self.config["play_simulation"],

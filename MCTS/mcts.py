@@ -1,3 +1,4 @@
+"""
 # https://web.stanford.edu/~surag/posts/alphazero.html
 # https://www.baeldung.com/java-monte-carlo-tree-search
 
@@ -36,3 +37,4 @@ class MCTS:
 #     tictactoe.play(test, 1)
 #     tictactoe.print_state()
 #     #print(test)
+"""

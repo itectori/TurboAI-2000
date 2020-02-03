@@ -41,6 +41,7 @@ class TicTacToe:
         return 0
 
     def encode_input(self):
+        '''        
         rdn_input = [0, 0]
         rdn_input[self.player - 1] = 1
         p1 = (self.grid == 1).astype(np.int)
@@ -48,3 +49,11 @@ class TicTacToe:
         for e in zip(p1, p2):
             rdn_input += e
         return np.array(rdn_input)
+        '''
+
+        encoded = np.zeros([3,3,3]).astype(np.int)
+        encoded[0,:,:] = (self.grid == 1).astype(np.int).reshape(3,3)
+        encoded[1,:,:] = (self.grid == 2).astype(np.int).reshape(3,3)
+        encoded[2,:,:] = self.player-1 # player to move
+        
+        return encoded

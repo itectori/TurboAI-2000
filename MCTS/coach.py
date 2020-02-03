@@ -63,7 +63,7 @@ class Coach():
         only if it wins >= updateThreshold fraction of games.
         """
 
-        for i in range(1, 5):
+        for i in range(1, 15):
             print('------ITER ' + str(i) + '------')
             # examples of the iteration
             

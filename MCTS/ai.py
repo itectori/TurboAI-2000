@@ -1,5 +1,5 @@
 import keras
-from keras.layers import Input, Dense
+from keras.layers import Input, Dense, Conv2D, BatchNormalization, Flatten, Add, Activation
 from keras.models import load_model, Model
 import os
 import sys
@@ -111,15 +111,36 @@ def train(game_name, game_module, config, name):
         save(None, game_name, name, config)
         return
 
-    input_layer = Input(shape=(len(game_module.encode_input()),))
+    input_layer = Input(shape=game_module.encode_input().shape)
     layer = input_layer
-    for l in config_json["nn"]["hidden_layers"]:
+    for l in config_json["residual"]["hidden_layers"]:
+        layer = BatchNormalization()(layer)
+        
+        #Shorcut path
+        shortcut = layer
+        shortcut = Conv2D(int(l["size"]*1.5), kernel_size=(1,1), padding='same', kernel_initializer="glorot_uniform", activation=l["activation"])(layer)
+
+        #normal path
+        print(type(l["size"]))
+        layer = Conv2D(l["size"], kernel_size=(3,3), padding='same', kernel_initializer="glorot_uniform", activation=l["activation"])(layer)
+        layer = BatchNormalization()(layer)
+        layer = Conv2D(int(l["size"]*1.25), kernel_size=(3,3), padding='same', kernel_initializer="glorot_uniform",activation=l["activation"])(layer)
+        layer = BatchNormalization()(layer)
+        layer = Conv2D(int(l["size"]*1.5), kernel_size=(3,3), padding='same', kernel_initializer="glorot_uniform", activation=l["activation"])(layer)
+        layer = BatchNormalization()(layer)
+
+        layer = keras.layers.Add()([layer, shortcut])
+
+    layer= Flatten()(layer)
+    for l in config_json["dense"]["hidden_layers"]:
         layer = Dense(l["size"], activation=l["activation"])(layer)
-    p = Dense(config_json["nn"]["policy_size"], activation='softmax', name='p')(layer)
+
+
+    p = Dense(config_json["policy_size"], activation='softmax', name='p')(layer)
     eval_ = Dense(1, activation='tanh', name='eval')(layer)
     model = Model(inputs=[input_layer], outputs=[p, eval_])
 
-    model.compile(optimizer=config_json["nn"]["optimizer"], \
+    model.compile(optimizer=config_json["optimizer"], \
             loss={"p": loss_p, "eval": loss_eval}, \
                   metrics=['accuracy'],
                   loss_weights=[1., 1.])

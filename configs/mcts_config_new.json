@@ -1,10 +1,10 @@
 {
-    "game": "tictactoe",
+    "game": "connect4",
     "algo": "MCTS",
     "play_simulation": 50,
     "c_puct": 1.414,
     "tau": 1,
-    "policy_size": 9,
+    "policy_size": 7,
     "optimizer": "adam",
     "residual": {
         "hidden_layers": [

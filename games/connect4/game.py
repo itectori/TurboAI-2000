@@ -59,11 +59,9 @@ class Connect4:
         return 0
 
     def encode_input(self):
-        rdn_input = [0, 0]
-        rdn_input[self.player - 1] = 1
-        p1 = (self.grid.flatten() == 1).astype(np.int)
-        p2 = (self.grid.flatten() == 2).astype(np.int)
-        for e in zip(p1, p2):
-            rdn_input += e
-        return np.array(rdn_input)
+        encoded = np.zeros([3,7,6]).astype(np.int)
+        encoded[0,:,:] = (self.grid == 1).astype(np.int)
+        encoded[1,:,:] = (self.grid == 2).astype(np.int)
+        encoded[2,:,:] = self.player-1 # player to move
+        return encoded
 

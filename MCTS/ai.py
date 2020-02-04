@@ -121,7 +121,6 @@ def train(game_name, game_module, config, name):
         shortcut = Conv2D(int(l["size"]*1.5), kernel_size=(1,1), padding='same', kernel_initializer="glorot_uniform", activation=l["activation"])(layer)
 
         #normal path
-        print(type(l["size"]))
         layer = Conv2D(l["size"], kernel_size=(3,3), padding='same', kernel_initializer="glorot_uniform", activation=l["activation"])(layer)
         layer = BatchNormalization()(layer)
         layer = Conv2D(int(l["size"]*1.25), kernel_size=(3,3), padding='same', kernel_initializer="glorot_uniform",activation=l["activation"])(layer)

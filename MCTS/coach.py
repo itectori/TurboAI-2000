@@ -12,7 +12,7 @@ class Coach():
     def __init__(self, ai):
         #self.pnet = self.nnet.__class__(self.game)  # the competitor network
         self.ai = ai
-        self.batch_size = 100
+        self.batch_size = 500
         self.trainExamplesHistoryX = [[]]
         self.trainExamplesHistoryY = [[],[]]
 
@@ -63,34 +63,19 @@ class Coach():
         only if it wins >= updateThreshold fraction of games.
         """
 
-        for i in range(1, 15):
+        for i in range(20):
             print('------ITER ' + str(i) + '------')
             # examples of the iteration
             
-            for eps in range(25): #number of game
-                print(f"play eps nb {eps}")
+            for eps in range(10): #number of game
+                #print(f"play eps nb {eps}")
                 self.ai.reset()
                 states,policy,rewards = self.executeEpisode()
-                
                 self._check_len_insert(self.trainExamplesHistoryX[0], states)
                 self._check_len_insert(self.trainExamplesHistoryY[0], policy)
                 self._check_len_insert(self.trainExamplesHistoryY[1], rewards)
 
-                
-            '''
-            self.trainExamplesHistory.append(iterationTrainExamples)
-             
-            if len(self.trainExamplesHistory) > 100:
-                print("len(trainExamplesHistory) =", len(self.trainExamplesHistory), " => remove the oldest trainExamples")
-                self.trainExamplesHistory = self.trainExamplesHistory[1:]
-            '''
-            #self.saveTrainExamples(i-1)
-            
-            # shuffle examples before training
-
-            # training new network, keeping a copy of the old one
-            
-
+        
             path = f"temp/model_{i}"
             self.ai.rdn.save(path)
             self.ai.rdn.fit(self.trainExamplesHistoryX, self.trainExamplesHistoryY, epochs=100, verbose=0)

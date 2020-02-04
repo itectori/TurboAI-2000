@@ -63,11 +63,11 @@ class Coach():
         only if it wins >= updateThreshold fraction of games.
         """
 
-        for i in range(20):
+        for i in range(25):
             print('------ITER ' + str(i) + '------')
             # examples of the iteration
             
-            for eps in range(10): #number of game
+            for eps in range(15): #number of game
                 #print(f"play eps nb {eps}")
                 self.ai.reset()
                 states,policy,rewards = self.executeEpisode()
@@ -81,10 +81,18 @@ class Coach():
             self.ai.rdn.fit(self.trainExamplesHistoryX, self.trainExamplesHistoryY, epochs=100, verbose=0)
             
             opponent = ai.AI(load_model(path, custom_objects={"loss_eval":ai.loss_eval, "loss_p": ai.loss_p}), self.ai.game, self.ai.config, 2)
+            temp_tau = opponent.tau
             
-            nb_game = 100
+            new_tau = 0.2
+            opponent.tau = new_tau
+            self.ai.tau = new_tau
+
+            nb_game = 50
             nwins, pwins, draws = validation.score(self.ai.game, self.ai, opponent, nb_game)
             ratio = nwins+draws*1/2
+            
+            opponent.tau = temp_tau
+            self.ai.tau = temp_tau
             print('NEW/PREV WINS : %f / %f ; DRAWS : %f , ratio %f' % (nwins, pwins, draws, ratio))
             if  ratio < 0.55:
                 print('REJECTING NEW MODEL')

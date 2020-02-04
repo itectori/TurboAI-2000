@@ -90,6 +90,7 @@ def play(game, start_depth=0, max_depth=99, max_time=4, nb_iter_eval=20, verbose
     __nb_iter_eval = nb_iter_eval
     move = None
     moves = game.get_all_moves()
+    random.shuffle(moves) #make minimax non-deterministic
     depth = start_depth - 1
     pv = []
     start_time = time.time()

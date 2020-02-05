@@ -11,17 +11,25 @@
             {
                 "size": 18,
                 "activation": "relu"
+            },
+            {
+                "size": 27,
+                "activation": "relu"
+            },
+            {
+                "size": 41,
+                "activation": "relu"
             }
         ]
     },
     "dense": {
         "hidden_layers": [
             {
-                "size": 32,
+                "size": 64,
                 "activation": "relu"
             },
             {
-                "size": 64,
+                "size": 128,
                 "activation": "relu"
             }
         ]

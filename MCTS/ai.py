@@ -1,5 +1,5 @@
 import keras
-from keras.layers import Input, Dense, Conv2D, BatchNormalization, Flatten, Add, Activation
+from keras.layers import Input, Dense, Conv2D, BatchNormalization, Flatten, Add, Activation, Dropout
 from keras.models import load_model, Model
 import os
 import sys
@@ -123,10 +123,14 @@ def train(game_name, game_module, config, name):
         #normal path
         layer = Conv2D(l["size"], kernel_size=(3,3), padding='same', kernel_initializer="glorot_uniform", activation=l["activation"])(layer)
         layer = BatchNormalization()(layer)
+        layer = Dropout(0.3)(layer)
         layer = Conv2D(int(l["size"]*1.25), kernel_size=(3,3), padding='same', kernel_initializer="glorot_uniform",activation=l["activation"])(layer)
         layer = BatchNormalization()(layer)
+        layer = Dropout(0.3)(layer)
         layer = Conv2D(int(l["size"]*1.5), kernel_size=(3,3), padding='same', kernel_initializer="glorot_uniform", activation=l["activation"])(layer)
         layer = BatchNormalization()(layer)
+        layer = Dropout(0.3)(layer)
+
 
         layer = keras.layers.Add()([layer, shortcut])
 

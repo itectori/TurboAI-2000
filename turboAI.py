@@ -1,6 +1,7 @@
 import sys
 from games.tictactoe.game import TicTacToe
 from games.connect4.game import Connect4
+from games.wesnuts.game import Wesnuts
 import numpy as np
 import MCTS.ai
 import random
@@ -17,7 +18,8 @@ class Command:
 def get_game(game):
     games = {
             "connect4": Connect4(),
-            "tictactoe": TicTacToe()
+            "tictactoe": TicTacToe(),
+            "wesnuts": Wesnuts(),
             }
     if game not in games:
         print("Unknown game:", game)

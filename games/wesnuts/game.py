@@ -103,7 +103,7 @@ class Wesnuts:
         return 0
 
     def encode_input(self):
-        encoded = np.zeros([3,10,10]).astype(np.int)
+        encoded = np.zeros([3,9,9]).astype(np.int)
         for i in range(9):
             for j in range(9):
                 if self.grid[i, j]:

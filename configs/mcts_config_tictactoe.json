@@ -2,7 +2,7 @@
     "game": "tictactoe",
     "algo": "MCTS",
     "play_simulation": 25,
-    "c_puct": 1.414,
+    "c_puct": 0.5,
     "tau": 1,
     "policy_size": 9,
     "optimizer": "adam",

@@ -2,7 +2,7 @@
     "game": "connect4",
     "algo": "MCTS",
     "play_simulation": 3,
-    "c_puct": 1.414,
+    "c_puct": 0.5,
     "tau": 1,
     "policy_size": 7,
     "optimizer": "adam",
